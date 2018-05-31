@@ -5,6 +5,7 @@ import pandas as pd
 
 
 class TestBasicSSA_nplapack(unittest.TestCase):
+    """Test if signal reconstruction is correct"""
 
     def setUp(self):
         np.random.seed(0)
