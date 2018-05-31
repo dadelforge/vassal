@@ -10,11 +10,6 @@ import matplotlib.pyplot as plt
 class PlotSSA(object):
     __metaclass__ = abc.ABCMeta
 
-    # ---------------------------------------------------------------------------
-    # Abstract methods
-
-
-
     # --------------------------------------------------------------------------
     # Plotting methods
 
@@ -173,7 +168,6 @@ class PlotSSA(object):
 
         # TODO: check type pairs list of tuple of size 2
 
-        print pairs
         u = self.svd[0]
         s = self.svd[1] ** 2  # TODO: check if power is needed
 

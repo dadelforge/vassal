@@ -17,6 +17,28 @@ except ImportError:
     warnings.warn('pandas module missing: __TS__DEFAULT_TYPE__ set to np.array')
     __TS_DEFAULT_TYPE__ = 'nparray'
 
+def ssa(ts, kind='basic', svdmethod='nplapack'):
+    """
+
+    Parameters
+    ----------
+    kind : str
+        String specifying the kind of SSA algorithm being used. Available
+        algorithm are the basic SSA, kind='basic', and the Toeplitz SSA,
+        kind='toeplitz'.
+    """
+
+    ssa_object = None
+
+    if kind == 'basic':
+        ssa_object = BasicSSA(ts, svdmethod=svdmethod)
+
+    elif kind == 'toeplitz':
+        ssa_object = ToeplitzSSA(ts, svdmethod=svdmethod)
+
+    return ssa_object
+
+
 class BasicSSA(BaseSSA, PlotSSA):
     """A class for basic Singular Spectrum Analysis 
     """
@@ -69,12 +91,12 @@ class BasicSSA(BaseSSA, PlotSSA):
         >>> myssa = BasicSSA(ts=timeseries)
         >>> u, s, v = myssa.decompose()
         >>> # Print the 3 first singular values
-        >>> print s[:3]
+        >>> print(s[:3])
         [ 220.04832942   42.43314868   42.11375246]
         
         * Grouping and reconstruction
         
-        >>> groups = {'trend':0, 'signal':range(1,10)}
+        >>> groups = {'trend':0, 'signal':list(range(1,10))}
         >>> myssa.reconstruct(groups)
         >>> myssa['trend'].describe()
         count   100.00
@@ -88,19 +110,19 @@ class BasicSSA(BaseSSA, PlotSSA):
         dtype: float64
         
         >>> myssa.to_frame().describe()
-               trend  signal  ssa_original  ssa_reconstruction  ssa_residuals
-        count 100.00  100.00        100.00              100.00         100.00
-        mean    4.35   -0.08          4.33                4.33           0.05
-        std     0.09    2.03          2.82                2.82           1.83
-        min     4.09   -4.80          0.00                0.00          -5.00
-        25%     4.32   -1.49          2.00                2.00          -1.16
-        50%     4.36   -0.10          4.00                4.00           0.10
-        75%     4.40    1.47          7.00                7.00           1.17
-        max     4.51    4.64          9.00                9.00           4.31
+               ssa_original  ssa_reconstruction  trend  signal  ssa_residuals
+        count        100.00              100.00 100.00  100.00         100.00
+        mean           4.33                4.33   4.35   -0.08           0.05
+        std            2.82                2.82   0.09    2.03           1.83
+        min            0.00                0.00   4.09   -4.80          -5.00
+        25%            2.00                2.00   4.32   -1.49          -1.16
+        50%            4.00                4.00   4.36   -0.10           0.10
+        75%            7.00                7.00   4.40    1.47           1.17
+        max            9.00                9.00   4.51    4.64           4.31
 
         """
 
-        # we pass the svd method to the base class init in order to wrap the
+        # we pass the performance method to the base class init in order to wrap the
         # proper decompose method
 
         super(BasicSSA, self).__init__(ts=ts, svdmethod=svdmethod,
@@ -195,6 +217,8 @@ class ToeplitzSSA(BaseSSA):
 
     def _embedseries(self):
         pass
+
+
 
 
 if __name__ == '__main__':
