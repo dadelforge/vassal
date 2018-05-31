@@ -122,7 +122,7 @@ class PlotSSA(object):
 
         return fig, ax
 
-    def _vectors_plot(self, n=10, ax=None, **pltkw):
+    def _vectors_plot(self, n=10, **pltkw):
         """
         The rows of v are the eigenvectors of a.H a. The columns of u are the 
         eigenvectors of a a.H. For row i in v and column i in u, the 
@@ -136,9 +136,10 @@ class PlotSSA(object):
         -------
 
         """
-        # TODO: type error
+
         u = self.svd[0]
         s = self.svd[1] ** 2  # TODO: check if power is needed
+
 
         fig = plt.figure()
 
@@ -156,7 +157,7 @@ class PlotSSA(object):
 
             contribution = s[i] / np.sum(s) * 100
 
-            title = 'EV{0} ({1:.0f} %)'.format(i, contribution)
+            title = 'EV{0} ({1:.2f} %)'.format(i, contribution)
 
             ax.set_title(title, {'fontsize': 10.})
 
@@ -164,7 +165,7 @@ class PlotSSA(object):
 
         return fig, fig.get_axes()
 
-    def _paired_plot(self, pairs=zip(range(0, 9), range(1, 10)), **pltkw):
+    def _paired_plot(self, pairs=list(zip(range(0, 9), range(1, 10))), **pltkw):
 
         # TODO: check type pairs list of tuple of size 2
 
@@ -189,7 +190,7 @@ class PlotSSA(object):
             contribution1 = s[i] / ssum * 100
             contribution2 = s[j] / ssum * 100
 
-            title = 'EV{0} ({1:.0f}%) vs EV{2} ({3:.0f}%)'.format(
+            title = 'EV{0} ({1:.1f}%) vs EV{2} ({3:.1f}%)'.format(
                 i,
                 contribution1,
                 i + 1,
@@ -198,6 +199,6 @@ class PlotSSA(object):
 
             ax.set_title(title, {'fontsize': 10.})
 
-            fig.suptitle('Pairs of eigenvectors') #TODO : not printed in my notebook
+            fig.suptitle('Pairs of eigenvectors')
 
         return fig, fig.get_axes()

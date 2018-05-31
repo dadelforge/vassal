@@ -17,7 +17,7 @@ except ImportError:
     warnings.warn('pandas module missing: __TS__DEFAULT_TYPE__ set to np.array')
     __TS_DEFAULT_TYPE__ = 'nparray'
 
-def ssa(ts, kind='basic', svdmethod='nplapack'):
+def ssa(ts, kind='basic', svdmethod='nplapack', **kwargs):
     """
 
     Parameters
@@ -28,13 +28,16 @@ def ssa(ts, kind='basic', svdmethod='nplapack'):
         kind='toeplitz'.
     """
 
+    if not np.isfinite(ts).all():
+        raise ValueError('Time series must not contain infs or NaNs')
+
     ssa_object = None
 
     if kind == 'basic':
-        ssa_object = BasicSSA(ts, svdmethod=svdmethod)
+        ssa_object = BasicSSA(ts, svdmethod=svdmethod, **kwargs)
 
     elif kind == 'toeplitz':
-        ssa_object = ToeplitzSSA(ts, svdmethod=svdmethod)
+        ssa_object = ToeplitzSSA(ts, svdmethod=svdmethod, **kwargs)
 
     return ssa_object
 
