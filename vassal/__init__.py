@@ -1,1 +1,1 @@
-import vassal.ssa as ssa
+from vassal.ssa import ssa
