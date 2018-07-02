@@ -190,7 +190,7 @@ class PlotSSA(object):
             contribution1 = s[i] / ssum * 100
             contribution2 = s[j] / ssum * 100
 
-            title = 'EV{0} ({1:.1f}%) vs EV{2} ({3:.1f}%)'.format(
+            title = 'EV {0} ({1:.0f}%) vs {2} ({3:.0f}%)'.format(
                 i,
                 contribution1,
                 i + 1,

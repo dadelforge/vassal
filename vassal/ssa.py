@@ -10,7 +10,6 @@ from vassal.plot import PlotSSA
 
 try:
     import pandas as pd
-
     __TS_DEFAULT_TYPE__ = 'pdseries'
 except ImportError:
     pd = None
@@ -125,9 +124,6 @@ class BasicSSA(BaseSSA, PlotSSA):
 
         """
 
-        # we pass the performance method to the base class init in order to wrap the
-        # proper decompose method
-
         super(BasicSSA, self).__init__(ts=ts, svdmethod=svdmethod,
                                        usetype=usetype)
 
@@ -165,6 +161,9 @@ class BasicSSA(BaseSSA, PlotSSA):
             x[:, i] = ts[i:i + w]
 
         return np.matrix(x)
+
+    def _svdmatrix(self):
+        return self._embedseries()
 
     def _reconstruct_group(self, idx):
 
@@ -214,13 +213,105 @@ class BasicSSA(BaseSSA, PlotSSA):
         return np.array(ts)
 
 
-class ToeplitzSSA(BaseSSA):
-    def _reconstruct_group(self, grpidx):
-        pass
+class ToeplitzSSA(BaseSSA, PlotSSA):
+
+    def __init__(self, ts=None, window=None, svdmethod='nplapack',
+                 usetype=__TS_DEFAULT_TYPE__):
+
+        super(ToeplitzSSA, self).__init__(ts=ts, svdmethod=svdmethod,
+                                       usetype=usetype)
+
+        # define window length if none
+
+        if window is None:
+            window = self._n_ts // 2
+
+        self.window = window
 
     def _embedseries(self):
-        pass
+        """Embed a time series into a N-K-trajectory matrix
 
+        Returns
+        -------
+        x : np.matrix
+            the trajectory matrix of size (window, k)
+
+        """
+
+        ts = self.ts
+        k = self.window
+        n = self._n_ts
+
+        x = np.zeros(shape=(n, k))
+
+        for i in range(k):
+            x[:n-i, i] = ts[i:]
+
+        return np.matrix(x)
+
+    def _svdmatrix(self):
+        return self._covariance_matrix(self._embedseries())
+
+    def _covariance_matrix(self, x):
+        """Compute the lagged covariance matrix of the trajectory matrix"""
+        k = self.window
+        x = np.array(x[:,0])
+        n = len(x)
+        cx = np.ones((k,k)) * np.sum(x*x)/n
+
+        for i in range (k):
+            for j in range(k):
+                dt = np.abs(i-j)
+                if i != j:
+                    cx[i, j] = np.sum(x[:-dt]*x[dt:])/(n -dt)
+        return np.matrix(cx)
+
+    def _reconstruct_group(self, idx):
+
+        u, s, v = self.svd
+
+        x = self._embedseries()
+        m, n = x.shape
+
+        x_grp = np.matrix(np.zeros(shape=(m, n)))
+
+        if isinstance(idx, int):
+            idx = [idx]
+
+        for i in idx:
+            s_i = np.sqrt(
+                s[i])
+            u_i = u[:, i]  # eigenvector i corresponding to si
+            v_i = np.dot(x, u_i) / s_i
+            x_i = s_i * u_i * v_i.T
+            x_grp += x_i.T
+
+        # anti diagonal averaging
+
+        ts = self._hankelmatrix_to_ts(x_grp)
+
+        return ts
+
+    @staticmethod
+    def _hankelmatrix_to_ts(x):
+        """Average the antidiagonal of Hankel matrix to return 1d time series
+
+        Parameters
+        ----------
+        x : np.matrix
+
+        Returns
+        -------
+
+        timeseries: np.array
+
+        """
+        m, n = x.shape
+
+        ts = [np.mean(x[::-1, :].diagonal(i)) for i in
+              range(-m + 1, n)]
+
+        return np.array(ts)[:-(n-1)]
 
 
 

@@ -9,11 +9,11 @@ class options(object):
     """
     Examples
     --------
-    >>> print options.__PRINT_PRECISION__
+    >>> print(options.__PRINT_PRECISION__)
     3
     
     >>> options.set_precision(5)
-    >>> print options.__PRINT_PRECISION__
+    >>> print(options.__PRINT_PRECISION__)
     5
     
     
@@ -56,7 +56,7 @@ def timerprinter(func):
         result = func(*args, **kwargs)
         after = time.time()
         elapsed = round(after - before, options.__PRINT_PRECISION__)
-        print 'Run {0.__name__} once in: {1} s'.format(func, elapsed)
+        print('Run {0.__name__} once in: {1} s'.format(func, elapsed))
         return result
 
     return wrapper
@@ -97,8 +97,8 @@ def ntimerprinter(n):
             after = time.time()
             elapsed = round(after - before, options.__PRINT_PRECISION__)
 
-            print 'Run {0.__name__} {1} times in: {2} s'.format(func, n,
-                                                                    elapsed)
+            print('Run {0.__name__} {1} times in: {2} s'.format(func, n,
+                                                                    elapsed))
             return result
 
         return wrapper
