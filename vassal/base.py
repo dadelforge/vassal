@@ -412,7 +412,7 @@ class BaseSSA(object):
 
         nts = self._n_ts
 
-        w_k = min((col, row, nts - col)) * np.ones(nts)
+        w_k = np.min((col, row, nts - col)) * np.ones(nts)
 
         # intialize w-corr upper right matrix
 
@@ -489,7 +489,7 @@ class BaseSSA(object):
 
         # Matrix to be decomposed
 
-        x = self._embedseries()
+        x = self._svdmatrix()
 
         # Apply decomposition
 
@@ -536,7 +536,7 @@ class BaseSSA(object):
         """
         # Matrix to be decomposed
 
-        x = self._embedseries()
+        x = self._svdmatrix()
 
         # Decomposition
 
@@ -582,7 +582,7 @@ class BaseSSA(object):
         """
         # Matrix to be decomposed
 
-        x = csc_matrix(self._embedseries())
+        x = csc_matrix(self._svdmatrix())
 
         # Default k value is full performance
 
@@ -655,7 +655,7 @@ class BaseSSA(object):
 
         # Matrix to be decomposed
 
-        x = csc_matrix(self._embedseries())
+        x = csc_matrix(self._svdmatrix())
 
         # if k is None get the maximum
 
